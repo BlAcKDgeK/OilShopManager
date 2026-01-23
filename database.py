@@ -1,10 +1,10 @@
 import sqlite3
-
 from models import Product, CartItem, Review
 
 
 def connect_db():
     return sqlite3.connect('oil_shop.db')
+
 
 def create_tables():
     conn = connect_db()
@@ -62,6 +62,7 @@ def create_tables():
     conn.commit()
     conn.close()
 
+
 # ---------------- Работа с товарами ----------------
 def has_products():
     conn = connect_db()
@@ -70,6 +71,7 @@ def has_products():
     count = cursor.fetchone()[0]
     conn.close()
     return count > 0
+
 
 def add_product(name, description, price, image_path=None, category="Масло"):
     try:
@@ -88,6 +90,7 @@ def add_product(name, description, price, image_path=None, category="Масло"
     except ValueError as e:
         return str(e)
 
+
 def get_products(search_query="", category_filter="", min_price=0, max_price=float('inf')):
     conn = connect_db()
     cursor = conn.cursor()
@@ -98,6 +101,7 @@ def get_products(search_query="", category_filter="", min_price=0, max_price=flo
     conn.close()
     return products
 
+
 def get_product_by_id(product_id):
     conn = connect_db()
     cursor = conn.cursor()
@@ -107,6 +111,7 @@ def get_product_by_id(product_id):
     if row:
         return Product(*row)
     return None
+
 
 def update_product(product_id, name=None, description=None, price=None, image_path=None, category=None):
     conn = connect_db()
@@ -125,6 +130,7 @@ def update_product(product_id, name=None, description=None, price=None, image_pa
     conn.commit()
     conn.close()
 
+
 def delete_product(product_id):
     try:
         conn = connect_db()
@@ -141,7 +147,6 @@ def delete_product(product_id):
         print("Ошибка удаления товара:", e)
         return False
 
-# ---------------------------------------------------
 
 # ---------------- Работа с корзиной ----------------
 def add_to_cart(product_id, user_email, quantity=1):
@@ -200,7 +205,7 @@ def clear_cart(user_email):
     conn.close()
 
 
-# ---------------- Работа с заказами ----------------
+# --------------- Работа с заказами  ----------------
 def create_order(user_email, cart_items):
     if not user_email or not cart_items:
         print("Ошибка: нет пользователя или корзины")
@@ -219,7 +224,7 @@ def create_order(user_email, cart_items):
         )
     conn.commit()
     conn.close()
-    clear_cart(user_email)  # передаем email
+    clear_cart(user_email)
     return True
 
 
@@ -246,7 +251,7 @@ def get_orders(user_email=None):
     rows = cursor.fetchall()
     conn.close()
     return rows
-# ---------------------------------------------------
+
 
 # ---------------- Работа с отзывами ----------------
 def add_review(product_id, user_name, rating, comment):
@@ -259,6 +264,7 @@ def add_review(product_id, user_name, rating, comment):
     conn.commit()
     conn.close()
 
+
 def get_reviews(product_id):
     conn = connect_db()
     cursor = conn.cursor()
@@ -267,7 +273,7 @@ def get_reviews(product_id):
     reviews = [Review(*row) for row in rows]
     conn.close()
     return reviews
-# ---------------------------------------------------
+
 
 def init_data():
     create_tables()
@@ -275,6 +281,7 @@ def init_data():
         add_product("Оливковое масло, 250 мл", "Экстра вирджин из Греции", 500.0, "Оливковое масло.jpg", "Оливковое")
         add_product("Подсолнечное масло, 500 мл", "Холодный отжим", 300.0, "Подсолнечное масло.jpg", "Подсолнечное")
         add_product("Льняное масло, 250 мл", "Холодный отжим", 600.0, "Льняное масло.jpg", "Льняное")
+
 
 def update_cart_quantity(product_id, user_email, quantity):
     conn = connect_db()
@@ -286,6 +293,7 @@ def update_cart_quantity(product_id, user_email, quantity):
     conn.commit()
     conn.close()
 
+
 def remove_from_cart(product_id, user_email):
     conn = connect_db()
     cursor = conn.cursor()
@@ -295,4 +303,3 @@ def remove_from_cart(product_id, user_email):
     )
     conn.commit()
     conn.close()
-
